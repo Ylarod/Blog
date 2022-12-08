@@ -25,7 +25,9 @@ const WalineComponent = (props) => {
       waline = init({
         ...props,
         el: containerRef.current,
-        serverURL: BLOG.COMMENT_WALINE_SERVER_URL
+        serverURL: BLOG.COMMENT_WALINE_SERVER_URL,
+        lang: BLOG.lang,
+        reaction: true
       })
     }
 
@@ -60,8 +62,10 @@ const WalineComponent = (props) => {
     }
 
     return () => {
-      waline.destroy()
-      waline = null
+      if (waline) {
+        waline.destroy()
+        waline = null
+      }
       router.events.off('routeChangeComplete', updateWaline)
     }
   }, [])
