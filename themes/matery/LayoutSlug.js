@@ -18,7 +18,6 @@ export const LayoutSlug = props => {
   const scrollListener = () => {
     const scrollY = window.pageYOffset
     const shouldShow = scrollY > 220 && post?.toc?.length > 0
-
     if (shouldShow !== show) {
       switchShow(shouldShow)
     }
@@ -45,14 +44,20 @@ export const LayoutSlug = props => {
             showTag={false}
         >
 
-            <div id='inner-wrapper' className='flex'>
-                <div className={'drop-shadow-xl max-w-4xl 2xl:ml-36'}>
+            <div id='inner-wrapper'>
+                <div className={'drop-shadow-xl max-w-4xl'}>
                     <div className="-mt-32 rounded-md mx-3 lg:border lg:rounded-xl lg:py-4 bg-white dark:bg-hexo-black-gray  dark:border-black">
                         {lock && <ArticleLock validPassword={validPassword} />}
 
-                        {!lock && <div id="container" className="overflow-x-auto flex-grow md:w-full ">
+                        {!lock && <div id="container" className="overflow-x-auto md:w-full px-3 ">
                             {post?.type === 'Post' && <>
-                                <div className='px-10'>
+                                <div
+                                    data-aos="fade-down"
+                                    data-aos-duration="500"
+                                    data-aos-easing="ease-in-out"
+                                    data-aos-once="false"
+                                    data-aos-anchor-placement="top-center"
+                                    className='px-10'>
                                     <ArticleInfo post={post} />
                                 </div>
                                 <hr />
@@ -61,7 +66,14 @@ export const LayoutSlug = props => {
                             <div className='lg:px-10 '>
                                 <article itemScope itemType="https://schema.org/Movie" className="subpixel-antialiased" >
                                     {/* Notion文章主体 */}
-                                    <section id='notion-article' className='justify-center mx-auto max-w-2xl lg:max-w-full'>
+                                    <section id='notion-article'
+                                        data-aos-delay="200"
+                                        data-aos="fade-down"
+                                        data-aos-duration="500"
+                                        data-aos-easing="ease-in-out"
+                                        data-aos-once="false"
+                                        data-aos-anchor-placement="top-bottom"
+                                        className='justify-center mx-auto max-w-2xl lg:max-w-full'>
                                         {post && <NotionPage post={post} />}
                                     </section>
 
@@ -91,17 +103,29 @@ export const LayoutSlug = props => {
                         </div>}
                     </div>
                     {post.type === 'Post' && <ArticleAdjacent {...props} />}
+
+                    {post?.toc?.length > 0 && <div id='toc-wrapper' style={{ zIndex: '-1' }} className='absolute top-0 w-full h-full xl:block hidden' >
+                        <div data-aos-delay="200"
+                            data-aos="fade-down"
+                            data-aos-duration="500"
+                            data-aos-easing="ease-in-out"
+                            data-aos-once="false"
+                            data-aos-anchor-placement="top-center"
+                            className='relative h-full'>
+                            <div className='float-right -mr-72 h-full mt-40'>
+                                <div className='sticky top-24'>
+                                    <Catalog toc={post.toc} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>}
+
                 </div>
 
                 <div className='fixed bottom-28 right-4'>
                     <JumpToCommentButton />
                 </div>
 
-                <div id='toc-widget' className='w-60 hidden xl:block '>
-                    <div className='fixed top-24 overflow-auto'>
-                        {show && <Catalog toc={post.toc} />}
-                    </div>
-                </div>
             </div>
 
         </LayoutBase>

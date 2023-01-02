@@ -692,7 +692,7 @@ svg.notion-page-icon {
 }
 
 .notion-asset-wrapper-full {
-  max-width: 100vw;
+  /* max-width: 100vw; */
 }
 
 .notion-asset-wrapper img {
@@ -1965,7 +1965,7 @@ thead, tbody tr {
 }
 
 .notion-collection-card{
-    @apply dark:hover:text-gray-200
+    @apply dark:text-gray-200 dark:bg-gray-800 dark:hover:bg-black
 }
 
 .notion-code-copy{
@@ -1980,4 +1980,8 @@ pre[class*="language-mermaid"] {
 /* mermaid 原文隐藏 */
 code.language-mermaid {
     display:none
+}
+
+.code-toolbar{
+  @apply w-full;
 }
