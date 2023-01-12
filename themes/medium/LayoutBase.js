@@ -20,14 +20,14 @@ import BLOG from '@/blog.config'
  * @constructor
  */
 const LayoutBase = props => {
-  const { children, meta, showInfoCard = true, slotRight, slotTop } = props
+  const { children, meta, showInfoCard = true, slotRight, slotTop, siteInfo } = props
   const { locale } = useGlobal()
   const router = useRouter()
 
   return (
     <div className='bg-white dark:bg-hexo-black-gray w-full h-full min-h-screen justify-center dark:text-gray-300'>
       <CommonHead meta={meta} />
-      <main id='wrapper' className={(BLOG.LAYOUT_SIDEBAR_REVERSE ? 'flex-row-reverse' : '') + ' flex justify-between w-full h-full mx-auto'}>
+      <main id='wrapper' className={(BLOG.LAYOUT_SIDEBAR_REVERSE ? 'flex-row-reverse' : '') + 'relative flex justify-between w-full h-full mx-auto'}>
         {/* 桌面端左侧菜单 */}
         {/* <LeftMenuBar/> */}
 
@@ -61,7 +61,7 @@ const LayoutBase = props => {
       </div>
 
       {/* 移动端底部 */}
-      <Footer />
+      <Footer title={siteInfo?.title}/>
       <BottomMenuBar className='block md:hidden' />
     </div>
   )
