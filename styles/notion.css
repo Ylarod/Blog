@@ -700,6 +700,10 @@ svg.notion-page-icon {
   max-width: 100%;
 }
 
+.notion-asset-wrapper-image > div {
+    height: auto !important;
+}
+
 .notion-asset-wrapper-full {
   /* max-width: 100vw; */
 }
@@ -1305,6 +1309,7 @@ code[class*='language-'] {
 .notion-file-info {
   display: flex;
   align-items: baseline;
+  overflow-x: auto;
 }
 
 .notion-file-title {
