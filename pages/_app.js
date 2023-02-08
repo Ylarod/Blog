@@ -9,9 +9,6 @@ import '@/styles/globals.css'
 import 'react-notion-x/src/styles.css'
 import '@/styles/notion.css' //  重写部分样式
 
-// 代码样式  更多样式参考： https://github.com/PrismJS/prism-themes
-import 'prism-themes/themes/prism-material-light.css'
-
 // local webfont @see https://fontsource.org/
 import '@fontsource/noto-sans-sc'
 import '@fontsource/noto-serif-sc'
@@ -32,6 +29,9 @@ import { Sakura } from '@/components/Sakura'
 import { StarrySky } from '@/components/StarrySky'
 import MusicPlayer from '@/components/MusicPlayer'
 import ExternalScript from '@/components/ExternalScript'
+import AOS from 'aos'
+import { isBrowser } from '@/lib/utils'
+import 'aos/dist/aos.css' // You can also use <link> for styles
 
 const Ackee = dynamic(() => import('@/components/Ackee'), { ssr: false })
 const Gtag = dynamic(() => import('@/components/Gtag'), { ssr: false })
@@ -71,6 +71,10 @@ const MyApp = ({ Component, pageProps }) => {
 
   // 用户指定CUSTOM_FONT 则取CUSTOM_FONT_URL
   const FONTS_URL = BLOG.CUSTOM_FONT ? BLOG.CUSTOM_FONT_URL : DEFAULT_FONTS_URL
+
+  if (isBrowser()) {
+    AOS.init()
+  }
 
   return (
         <GlobalContextProvider>
