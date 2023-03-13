@@ -14,7 +14,13 @@ import dynamic from 'next/dynamic'
 
 const FacebookPage = dynamic(
   () => {
-    return import('@/components/FacebookPage')
+    let facebook = <></>
+    try {
+      facebook = import('@/components/FacebookPage')
+    } catch (err) {
+      console.error(err)
+    }
+    return facebook
   },
   { ssr: false }
 )
@@ -27,7 +33,7 @@ const FacebookPage = dynamic(
  */
 const LayoutBase = props => {
   const { children, headerSlot, floatSlot, meta, siteInfo } = props
-  const [show, switchShow] = useState(false)
+  const [showFloatButton, switchShow] = useState(false)
   // const [percent, changePercent] = useState(0) // 页面阅读百分比
   const rightAreaSlot = (
     <>
@@ -38,33 +44,35 @@ const LayoutBase = props => {
   const { onLoading } = useGlobal()
 
   const scrollListener = () => {
-    const targetRef = document.getElementById('wrapper')
-    const clientHeight = targetRef?.clientHeight
-    const scrollY = window.pageYOffset
-    const fullHeight = clientHeight - window.outerHeight
-    let per = parseFloat(((scrollY / fullHeight) * 100).toFixed(0))
-    if (per > 100) per = 100
-    const shouldShow = scrollY > 100 && per > 0
+    requestAnimationFrame(() => {
+      const targetRef = document.getElementById('wrapper')
+      const clientHeight = targetRef?.clientHeight
+      const scrollY = window.pageYOffset
+      const fullHeight = clientHeight - window.outerHeight
+      let per = parseFloat(((scrollY / fullHeight) * 100).toFixed(0))
+      if (per > 100) per = 100
+      const shouldShow = scrollY > 100 && per > 0
 
-    if (shouldShow !== show) {
-      switchShow(shouldShow)
-    }
+      if (shouldShow !== showFloatButton) {
+        switchShow(shouldShow)
+      }
     // changePercent(per)
+    })
   }
   useEffect(() => {
     document.addEventListener('scroll', scrollListener)
     return () => document.removeEventListener('scroll', scrollListener)
-  }, [show])
+  }, [])
 
   return (
-    <div id='theme-hexo' className="bg-hexo-background-gray dark:bg-black">
+    <div id='theme-hexo'>
       <CommonHead meta={meta} siteInfo={siteInfo}/>
 
       <TopNav {...props} />
 
       {headerSlot}
 
-      <main id="wrapper" className="w-full py-8 md:px-8 lg:px-24 min-h-screen relative">
+      <main id="wrapper" className="bg-hexo-background-gray dark:bg-black w-full py-8 md:px-8 lg:px-24 min-h-screen relative">
         <div
           id="container-inner"
           className={(BLOG.LAYOUT_SIDEBAR_REVERSE ? 'flex-row-reverse' : '') + ' pt-14 w-full mx-auto lg:flex lg:space-x-4 justify-center relative z-10'}
@@ -77,13 +85,8 @@ const LayoutBase = props => {
       </main>
 
       {/* 右下角悬浮 */}
-      <div className={(show ? 'opacity-100 ' : 'invisible opacity-0') + '  duration-300 transition-all bottom-12 right-1 fixed justify-end z-20  text-white bg-indigo-500 dark:bg-hexo-black-gray rounded-sm'}>
-        <div
-          className={
-
-            '  justify-center  flex flex-col items-center cursor-pointer '
-          }
-        >
+      <div className={(showFloatButton ? 'opacity-100 ' : 'invisible opacity-0') + '  duration-300 transition-all bottom-12 right-1 fixed justify-end z-20  text-white bg-indigo-500 dark:bg-hexo-black-gray rounded-sm'}>
+        <div className={'justify-center  flex flex-col items-center cursor-pointer'}>
           <FloatDarkModeButton />
           {floatSlot}
           <JumpToTopButton />
