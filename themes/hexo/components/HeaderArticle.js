@@ -11,7 +11,7 @@ export default function HeaderArticle({ post, siteInfo }) {
   if (!post) {
     return <></>
   }
-  const headerImage = post?.page_cover ? `url("${post.page_cover}&w=1600")` : `url("${siteInfo?.pageCover}&w=1600")`
+  const headerImage = post?.page_cover ? `url("${post.page_cover}")` : `url("${siteInfo?.pageCover}")`
 
   const date = formatDate(
     post?.date?.start_date || post?.createdTime,
@@ -21,7 +21,11 @@ export default function HeaderArticle({ post, siteInfo }) {
   return (
     <div
       id="header"
-      className="w-full h-96 relative md:flex-shrink-0 overflow-hidden bg-cover bg-center bg-no-repeat animate__animated animate__fadeIn z-10"
+      data-aos="fade-down"
+      data-aos-duration="300"
+      data-aos-once="true"
+      data-aos-anchor-placement="top-bottom"
+      className="w-full h-96 relative md:flex-shrink-0 overflow-hidden bg-cover bg-center bg-no-repeat z-10"
       style={{ backgroundImage: headerImage }}
     >
       <header id='article-header-cover'
@@ -35,7 +39,7 @@ export default function HeaderArticle({ post, siteInfo }) {
             <div className='mb-3 flex justify-center'>
               {post.category && <>
                 <Link href={`/category/${post.category}`} passHref legacyBehavior>
-                  <div className="cursor-pointer px-2 py-1 mb-2 border rounded-sm dark:border-white text-sm font-medium  text-5xl shadow-text-md text-white">
+                  <div className="cursor-pointer px-2 py-1 mb-2 border rounded-sm dark:border-white text-sm font-medium hover:underline duration-200 shadow-text-md text-white">
                     {post.category}
                   </div>
                 </Link>
