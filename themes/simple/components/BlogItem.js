@@ -6,13 +6,13 @@ import TwikooCommentCount from '@/components/TwikooCommentCount'
 export const BlogItem = props => {
   const { post } = props
 
-  return <div key={post.id} className="mb-10 pb-12 border-b dark:border-gray-800" >
+  return <div key={post.id} className="h-42 my-6 pb-12 border-b dark:border-gray-800" >
         {/* 文章标题 */}
 
         <h2 className="mb-2">
             <Link
-                href={`/${post.slug}`}
-                className="blog-item-title font-bold text-black text-2xl no-underline hover:underline">
+                href={`${BLOG.SUB_PATH}/${post.slug}`}
+                className="blog-item-title font-bold text-black text-2xl menu-link">
                 {post.title}
             </Link>
         </h2>
@@ -23,7 +23,7 @@ export const BlogItem = props => {
             <div className='space-x-2'>
                 <span>  <a href={CONFIG_SIMPLE.AUTHOR_LINK} className='p-1 hover:text-red-400 transition-all duration-200'><i className="fa-regular fa-user"></i> {BLOG.AUTHOR}</a></span>
                 <span>
-                    <Link className='p-1 hover:text-red-400 transition-all duration-200' href={`/archive#${post?.date?.start_date?.substr(0, 7)}`}>
+                    <Link className='p-1 hover:text-red-400 transition-all duration-200' href={`/archive#${post?.publishTime?.substr(0, 7)}`}>
                         <i className="fa-regular fa-clock" /> {post.date?.start_date || post.createdTime}
                     </Link>
                 </span>
@@ -42,7 +42,7 @@ export const BlogItem = props => {
         </div>
 
         <div className='block'>
-            <Link href={`/${post.slug}`} className='inline-block rounded-sm text-blue-600 text-xs dark:border-gray-800 border hover:text-red-400 transition-all duration-200 hover:border-red-300 h-9 leading-8 px-5'>
+            <Link href={`${BLOG.SUB_PATH}/${post.slug}`} className='inline-block rounded-sm text-blue-600 text-xs dark:border-gray-800 border hover:text-red-400 transition-all duration-200 hover:border-red-300 h-9 leading-8 px-5'>
                 Continue Reading <i className="fa-solid fa-angle-right align-middle"></i>
             </Link>
         </div>

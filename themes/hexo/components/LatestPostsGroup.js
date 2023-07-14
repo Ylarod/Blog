@@ -29,7 +29,7 @@ const LatestPostsGroup = ({ latestPosts, siteInfo }) => {
         {latestPosts.map(post => {
           const selected = currentPath === `${BLOG.SUB_PATH}/${post.slug}`
 
-          const headerImage = post?.page_cover ? post.page_cover : siteInfo?.pageCover
+          const headerImage = post?.pageCoverThumbnail ? post.pageCoverThumbnail : siteInfo?.pageCover
 
           return (
             (<Link
@@ -59,7 +59,7 @@ const LatestPostsGroup = ({ latestPosts, siteInfo }) => {
                         }
                     >
                         <div>
-                            <div className='text-line-2'>{post.title}</div>
+                            <div className='line-clamp-2 menu-link'>{post.title}</div>
                             <div className="text-gray-500">{post.lastEditedTime}</div>
                         </div>
                     </div>
