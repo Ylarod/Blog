@@ -1,5 +1,4 @@
 import CONFIG from './config'
-import CommonHead from '@/components/CommonHead'
 import { createContext, useContext, useEffect, useRef } from 'react'
 import Footer from './components/Footer'
 import SideRight from './components/SideRight'
@@ -34,7 +33,6 @@ import replaceSearchResult from '@/components/Mark'
 import { siteConfig } from '@/lib/config'
 import AlgoliaSearchModal from '@/components/AlgoliaSearchModal'
 
-
 // 主题全局状态
 const ThemeGlobalHexo = createContext()
 export const useHexoGlobal = () => useContext(ThemeGlobalHexo)
@@ -46,14 +44,19 @@ export const useHexoGlobal = () => useContext(ThemeGlobalHexo)
  * @constructor
  */
 const LayoutBase = props => {
-  const { post , children, slotTop, meta, className } = props
+  const { post, children, slotTop, className } = props
   const { onLoading, fullWidth } = useGlobal()
 
   const router = useRouter()
   const headerSlot = post
-    ?  <PostHeader {...props} /> : (router.route==='/'  &&  siteConfig('HEXO_HOME_BANNER_ENABLE', null, CONFIG)
-    ? <Hero {...props} /> : null)
-  
+    ? <PostHeader {...props} />
+    : (router.route === '/' && siteConfig('HEXO_HOME_BANNER_ENABLE', null, CONFIG)
+        ? <Hero {...props} />
+        : null)
+
+  const drawerRight = useRef(null)
+  const tocRef = isBrowser ? document.getElementById('article-wrapper') : null
+
   const floatSlot = <>
         {post?.toc?.length > 1 && <div className="block lg:hidden">
             <TocDrawerButton
@@ -71,8 +74,6 @@ const LayoutBase = props => {
   return (
     <ThemeGlobalHexo.Provider value={{ searchModal }}>
         <div id='theme-hexo'>
-            {/* 网页SEO */}
-            <CommonHead meta={meta}/>
             <Style/>
 
             {/* 顶部导航 */}
@@ -117,9 +118,13 @@ const LayoutBase = props => {
                     </div>
 
                     {/* 右侧栏 */}
-                    <SideRight {...props} />
+                    <SideRight {...props} className={`space-y-4 lg:w-80 pt-4 ${post ? 'lg:pt-0' : 'lg:pt-4'}`} />
                 </div>
             </main>
+
+            <div className='block lg:hidden'>
+              <TocDrawer post={post} cRef={drawerRight} targetRef={tocRef} />
+            </div>
 
             {/* 悬浮菜单 */}
             <RightFloatArea floatSlot={floatSlot} />
@@ -141,7 +146,7 @@ const LayoutBase = props => {
  * @returns
  */
 const LayoutIndex = (props) => {
-  return <LayoutPostList {...props}  className='pt-8' />
+  return <LayoutPostList {...props} className='pt-8' />
 }
 
 /**
@@ -217,8 +222,6 @@ const LayoutArchive = (props) => {
  */
 const LayoutSlug = props => {
   const { post, lock, validPassword } = props
-  const drawerRight = useRef(null)
-  const tocRef = isBrowser ? document.getElementById('article-wrapper') : null
 
   return (
         <>
@@ -250,10 +253,6 @@ const LayoutSlug = props => {
                         <Comment frontMatter={post} />
                     </div>
                 </div>}
-            </div>
-
-            <div className='block lg:hidden'>
-                <TocDrawer post={post} cRef={drawerRight} targetRef={tocRef} />
             </div>
 
         </>

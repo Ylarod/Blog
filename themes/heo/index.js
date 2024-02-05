@@ -7,7 +7,6 @@
  */
 
 import CONFIG from './config'
-import CommonHead from '@/components/CommonHead'
 import { useEffect, useState } from 'react'
 import Footer from './components/Footer'
 import SideRight from './components/SideRight'
@@ -51,36 +50,31 @@ const LayoutBase = props => {
   const {
     children,
     slotTop,
-    className,
-    meta
+    className
   } = props
 
   // 全屏模式下的最大宽度
   const { fullWidth } = useGlobal()
   const router = useRouter()
-  console.log(router)
-  
+
   const headerSlot = (
     <header>
       {/* 顶部导航 */}
-      <div id="nav-bar-wrapper" className="h-16">
-        <NavBar {...props} />
-      </div>
+      <NavBar {...props} />
+
       {/* 通知横幅 */}
-      {router.route==='/' ? <>
-        <NoticeBar />
-        <Hero {...props} />
-      </>
-      : null}
-      <div className="max-w-[86rem] mx-auto px-3">
-        <WWAds className="w-full" orientation="horizontal" />
-      </div>
+      {router.route === '/'
+        ? <>
+            <NoticeBar />
+            <Hero {...props} />
+        </>
+        : null}
       {fullWidth ? null : <PostHeader {...props} />}
     </header>
   )
 
   // 右侧栏 用户信息+标签列表
-  const slotRight = fullWidth ? null : <SideRight {...props} />
+  const slotRight = (router.route === '/404' || fullWidth) ? null : <SideRight {...props} />
 
   const maxWidth = fullWidth ? 'max-w-[96rem] mx-auto' : 'max-w-[86rem]' // 普通最大宽度是86rem和顶部菜单栏对齐，留空则与窗口对齐
 
@@ -91,8 +85,7 @@ const LayoutBase = props => {
       id="theme-heo"
       className="bg-[#f7f9fe] dark:bg-[#18171d] h-full min-h-screen flex flex-col"
     >
-      {/* SEO信息 */}
-      <CommonHead meta={meta} />
+
       <Style />
 
       {/* 顶部嵌入 导航栏，首页放hero，文章页放文章详情 */}
@@ -159,7 +152,6 @@ const LayoutIndex = props => {
  * @returns
  */
 const LayoutPostList = props => {
-
   return (
       <div id="post-outer-wrapper" className="px-5  md:px-0">
         {/* 文章分类条 */}
@@ -184,7 +176,7 @@ const LayoutSearch = props => {
   const { keyword } = props
   const router = useRouter()
   const currentSearch = keyword || router?.query?.s
-  
+
   useEffect(() => {
     // 高亮搜索结果
     if (currentSearch) {
@@ -270,17 +262,12 @@ const LayoutSlug = props => {
     setHasCode(hasCode)
   }, [])
 
-
   const commentEnable = siteConfig('COMMENT_TWIKOO_ENV_ID') || siteConfig('COMMENT_WALINE_SERVER_URL') || siteConfig('COMMENT_VALINE_APP_ID') ||
     siteConfig('COMMENT_GISCUS_REPO') || siteConfig('COMMENT_CUSDIS_APP_ID') || siteConfig('COMMENT_UTTERRANCES_REPO') ||
     siteConfig('COMMENT_GITALK_CLIENT_ID') || siteConfig('COMMENT_WEBMENTION_ENABLE')
 
   return (
-    <div
-      {...props}
-      showCategory={false}
-      showTag={false}
-    >
+    <>
       <div className={`w-full ${fullWidth ? '' : 'xl:max-w-5xl'} ${hasCode ? 'xl:w-[73.15vw]' : ''} lg:hover:shadow lg:border rounded-2xl lg:px-2 lg:py-4 bg-white dark:bg-[#18171d] dark:border-gray-600 article`}>
         {lock && <ArticleLock validPassword={validPassword} />}
 
@@ -340,7 +327,7 @@ const LayoutSlug = props => {
         )}
       </div>
       <FloatTocButton {...props} />
-    </div>
+    </>
   )
 }
 
@@ -350,26 +337,11 @@ const LayoutSlug = props => {
  * @returns
  */
 const Layout404 = props => {
-  const { meta, siteInfo } = props
+  // const { meta, siteInfo } = props
   const { onLoading, fullWidth } = useGlobal()
   return (
-    <div
-      id="theme-heo"
-      className="bg-[#f7f9fe] dark:bg-[#18171d] h-full min-h-screen flex flex-col"
-    >
-      {/* 网页SEO */}
-      <CommonHead meta={meta} siteInfo={siteInfo} />
-      <Style />
-
-      {/* 顶部嵌入 导航栏，首页放hero，文章页放文章详情 */}
-      <header>
-        {/* 顶部导航 */}
-        <div id="nav-bar-wrapper" className="h-16">
-          <NavBar {...props} />
-        </div>
-      </header>
-
-      {/* 主区块 */}
+    <>
+    {/* 主区块 */}
       <main
         id="wrapper-outer"
         className={`flex-grow ${fullWidth ? '' : 'max-w-4xl'} w-screen mx-auto px-5`}
@@ -415,7 +387,7 @@ const Layout404 = props => {
           </Transition>
         </div>
       </main>
-    </div>
+    </>
   )
 }
 
@@ -427,7 +399,6 @@ const Layout404 = props => {
 const LayoutCategoryIndex = props => {
   const { categoryOptions } = props
   const { locale } = useGlobal()
-
 
   return (
       <div id="category-outer-wrapper" className="mt-8 px-5 md:px-0">

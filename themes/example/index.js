@@ -25,7 +25,6 @@ import TagItem from './components/TagItem'
 import { useRouter } from 'next/router'
 import { Transition } from '@headlessui/react'
 import { Style } from './style'
-import CommonHead from '@/components/CommonHead'
 import { siteConfig } from '@/lib/config'
 
 /**
@@ -36,7 +35,7 @@ import { siteConfig } from '@/lib/config'
  * @constructor
  */
 const LayoutBase = props => {
-  const { children, meta } = props
+  const { children } = props
   const { onLoading, fullWidth } = useGlobal()
   const router = useRouter()
   const { category, tag } = props
@@ -49,9 +48,9 @@ const LayoutBase = props => {
     slotTop = <div className='pb-12'>#{tag}</div>
   } else if (props.slotTop) {
     slotTop = props.slotTop
-  } else if (router.route==='/search'){
-   // 嵌入一个搜索框在顶部 
-   slotTop = <div className='pb-12'><SearchInput {...props} /></div>
+  } else if (router.route === '/search') {
+    // 嵌入一个搜索框在顶部
+    slotTop = <div className='pb-12'><SearchInput {...props} /></div>
   }
 
   // 增加一个状态以触发 Transition 组件的动画
@@ -64,9 +63,6 @@ const LayoutBase = props => {
 
   return (
         <div id='theme-example' className='dark:text-gray-300  bg-white dark:bg-black'>
-
-            {/* SEO信息 */}
-            <CommonHead meta={meta}/>
 
             <Style/>
 
@@ -136,7 +132,6 @@ const LayoutIndex = props => {
  * @returns
  */
 const LayoutPostList = props => {
-
   return (
         <>
             {siteConfig('POST_LIST_STYLE') === 'page' ? <BlogListPage {...props} /> : <BlogListScroll {...props} />}
