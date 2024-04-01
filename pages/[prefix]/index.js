@@ -1,16 +1,14 @@
 import BLOG from '@/blog.config'
-import { getPostBlocks } from '@/lib/notion'
-import { getGlobalData } from '@/lib/notion/getNotionData'
-import { useEffect, useState } from 'react'
-import { idToUuid } from 'notion-utils'
-import { useRouter } from 'next/router'
-import { getNotion } from '@/lib/notion/getNotion'
+import { siteConfig } from '@/lib/config'
+import { getGlobalData, getPost, getPostBlocks } from '@/lib/db/getSiteData'
 import { getPageTableOfContents } from '@/lib/notion/getPageTableOfContents'
+import { uploadDataToAlgolia } from '@/lib/plugins/algolia'
+import { checkContainHttp } from '@/lib/utils'
 import { getLayoutByTheme } from '@/themes/theme'
 import md5 from 'js-md5'
-import { checkContainHttp, isBrowser } from '@/lib/utils'
-import { uploadDataToAlgolia } from '@/lib/algolia'
-import { siteConfig } from '@/lib/config'
+import { useRouter } from 'next/router'
+import { idToUuid } from 'notion-utils'
+import { useEffect, useState } from 'react'
 
 /**
  * 根据notion的slug访问页面
@@ -20,7 +18,6 @@ import { siteConfig } from '@/lib/config'
  */
 const Slug = props => {
   const { post } = props
-  const router = useRouter()
 
   // 文章锁🔐
   const [lock, setLock] = useState(post?.password && post?.password !== '')
@@ -28,7 +25,7 @@ const Slug = props => {
   /**
    * 验证文章密码
    * @param {*} result
-  */
+   */
   const validPassword = passInput => {
     const encrypt = md5(post.slug + passInput)
     if (passInput && encrypt === post.password) {
@@ -40,27 +37,15 @@ const Slug = props => {
 
   // 文章加载
   useEffect(() => {
-    // 404
-    if (!post) {
-      setTimeout(() => {
-        if (isBrowser) {
-          const article = document.getElementById('notion-article')
-          if (!article) {
-            router.push('/404').then(() => {
-              console.warn('找不到页面', router.asPath)
-            })
-          }
-        }
-      }, 8 * 1000) // 404时长 8秒
-    }
-
     // 文章加密
     if (post?.password && post?.password !== '') {
       setLock(true)
     } else {
       setLock(false)
       if (!lock && post?.blockMap?.block) {
-        post.content = Object.keys(post.blockMap.block).filter(key => post.blockMap.block[key]?.value?.parent_id === post.id)
+        post.content = Object.keys(post.blockMap.block).filter(
+          key => post.blockMap.block[key]?.value?.parent_id === post.id
+        )
         post.toc = getPageTableOfContents(post, post.blockMap)
       }
     }
@@ -82,8 +67,7 @@ export async function getStaticPaths() {
 
   const from = 'slug-paths'
   const { allPages } = await getGlobalData({ from })
-  const paths = allPages?.filter(row => checkSlug(row))
-    .map(row => ({ params: { prefix: row.slug } }))
+  const paths = allPages?.filter(row => checkSlug(row)).map(row => ({ params: { prefix: row.slug } }))
   return {
     paths: paths,
     fallback: true
@@ -100,15 +84,15 @@ export async function getStaticProps({ params: { prefix } }) {
   const from = `slug-props-${fullSlug}`
   const props = await getGlobalData({ from })
   // 在列表内查找文章
-  props.post = props?.allPages?.find((p) => {
-    return (p.type.indexOf('Menu') < 0) && (p.slug === fullSlug || p.id === idToUuid(fullSlug))
+  props.post = props?.allPages?.find(p => {
+    return p.type.indexOf('Menu') < 0 && (p.slug === fullSlug || p.id === idToUuid(fullSlug))
   })
 
   // 处理非列表内文章的内信息
   if (!props?.post) {
     const pageId = prefix
     if (pageId.length >= 32) {
-      const post = await getNotion(pageId)
+      const post = await getPost(pageId)
       props.post = post
     }
   }
@@ -134,7 +118,7 @@ export async function getStaticProps({ params: { prefix } }) {
     const index = allPosts.indexOf(props.post)
     props.prev = allPosts.slice(index - 1, index)[0] ?? allPosts.slice(-1)[0]
     props.next = allPosts.slice(index + 1, index + 2)[0] ?? allPosts[0]
-    props.recommendPosts = getRecommendPost(props.post, allPosts, BLOG.POST_RECOMMEND_COUNT)
+    props.recommendPosts = getRecommendPost(props.post, allPosts, siteConfig('POST_RECOMMEND_COUNT'))
   } else {
     props.prev = null
     props.next = null
@@ -188,7 +172,7 @@ function checkSlug(row) {
   if (slug.startsWith('/')) {
     slug = slug.substring(1)
   }
-  return ((slug.match(/\//g) || []).length === 0 && !checkContainHttp(slug)) && row.type.indexOf('Menu') < 0
+  return (slug.match(/\//g) || []).length === 0 && !checkContainHttp(slug) && row.type.indexOf('Menu') < 0
 }
 
 export default Slug
