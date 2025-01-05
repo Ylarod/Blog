@@ -1,5 +1,7 @@
 import { useGlobal } from '@/lib/global'
 import { useGitBookGlobal } from '@/themes/gitbook'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 import NavPostList from './NavPostList'
 
 /**
@@ -13,10 +15,14 @@ const PageNavDrawer = props => {
   const { pageNavVisible, changePageNavVisible } = useGitBookGlobal()
   const { filteredNavPages } = props
   const { locale } = useGlobal()
-
+  const router = useRouter()
   const switchVisible = () => {
     changePageNavVisible(!pageNavVisible)
   }
+
+  useEffect(() => {
+    changePageNavVisible(false)
+  }, [router])
 
   return (
     <>
@@ -28,7 +34,7 @@ const PageNavDrawer = props => {
           className={`${pageNavVisible ? 'animate__slideInLeft ' : '-ml-80 animate__slideOutLeft'} 
                       overflow-y-hidden shadow-card w-72 duration-200 fixed left-1 bottom-16 rounded py-2 bg-white dark:bg-hexo-black-gray`}>
           <div className='px-4 pb-2 flex justify-between items-center border-b font-bold'>
-            <span>{locale.COMMON.ARTICLE}</span>
+            <span>{locale.COMMON.ARTICLE_LIST}</span>
             <i
               className='fas fa-times p-1 cursor-pointer'
               onClick={() => {
